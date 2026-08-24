@@ -3,61 +3,85 @@
 <head>
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1" />
-  <title>FSI Kyoto Practice</title>
-  <meta name="description" content="Private FSI-style Japanese and English practice portal for Kyoto exchange preparation." />
+  <title>日英口說練習</title>
+  <meta name="description" content="京都交換前的日英口說練習與學習紀錄。" />
   <link rel="stylesheet" href="assets/style.css" />
 </head>
 <body>
-  <main class="shell">
-    <section class="hero card">
-      <p class="eyebrow">🇯🇵🇬🇧 FSI 日英口說</p>
-      <h1>Kyoto Practice Portal</h1>
-      <p class="lede">以真實任務、主動提取、精準 remediation 與 5-Day Review Pack 為核心的私人練習入口。</p>
-      <div class="status-row">
-        <span class="pill">Repository initialized</span>
-        <span class="pill">Review Pack ready</span>
-        <span class="pill">Japanese TTS ready</span>
+  <main class="book">
+    <header class="cover paper">
+      <div>
+        <p class="kicker">🇯🇵 🇬🇧 京都交換前</p>
+        <h1>日英口說練習</h1>
+        <p class="intro">先把整個情境讀完，再回到 Chat 練自己說。練完卡住的地方，當天就補回這本練習簿。</p>
       </div>
+      <div class="cover-emoji" aria-hidden="true">📖🦊</div>
+    </header>
+
+    <section class="paper howto">
+      <h2>今天怎麼用這裡</h2>
+      <ol>
+        <li><strong>先讀完整故事</strong>：知道今天會遇到什麼，不用猜。</li>
+        <li><strong>整理輸入</strong>：先看關鍵單字、片語、chunks 和完整對話。</li>
+        <li><strong>回 Chat 練輸出</strong>：我會把同一個情境拆成 retrieval、變化題和對話。</li>
+        <li><strong>錯的當天補回來</strong>：高影響修正、卡住的詞和更自然說法直接更新到主題頁。</li>
+      </ol>
     </section>
 
-    <section class="grid">
-      <article class="card">
-        <h2>5-Day Review Packs</h2>
-        <p>每完成 5 個正式訓練日後，這裡會加入新的互動複習包。</p>
-        <div class="empty-state">尚未產生第一份 Review Pack</div>
-      </article>
-
-      <article class="card">
-        <h2>Quick Pronunciation Test</h2>
-        <p>確認瀏覽器可使用日文語音合成。</p>
-        <div class="speech-box">
-          <span id="sampleText" lang="ja">もう一度ゆっくりお願いします。</span>
-          <button id="speakBtn" type="button">▶ 發音</button>
-        </div>
-      </article>
-
-      <article class="card">
-        <h2>Training Focus</h2>
-        <ul>
-          <li>Vocabulary / Katakana retrieval</li>
-          <li>丁寧形 ↔ 普通形 / 動詞活用</li>
-          <li>Chunk-first grammar connection</li>
-          <li>Conversation repair</li>
-          <li>Kyoto real-life missions</li>
-        </ul>
-      </article>
-
-      <article class="card mascot-card">
-        <div class="mascot" aria-hidden="true">🦊</div>
-        <div>
-          <h2>Practice Buddy</h2>
-          <p id="buddyLine">先做一題就好。完成比完美重要。</p>
-          <button id="buddyBtn" type="button">戳一下</button>
-        </div>
-      </article>
+    <section class="section-head">
+      <div>
+        <p class="small-label">目錄</p>
+        <h2>主題故事</h2>
+      </div>
+      <p>一個主題一個主題補完整，不一次塞滿。</p>
     </section>
+
+    <section class="chapters">
+      <article class="chapter ready-next">
+        <span class="chapter-no">01</span><span class="chapter-icon">🏛️</span>
+        <h3>市役所：住址登錄與保險</h3>
+        <p>住所登録、国民健康保険、マイナンバーカード、窗口追問與確認。</p>
+        <span class="note">下一個先完成這篇</span>
+      </article>
+      <article class="chapter"><span class="chapter-no">02</span><span class="chapter-icon">🛬</span><h3>抵達日本</h3><p>入境、在留卡、資格外活動許可、機場交通。</p><span class="note">內容待補</span></article>
+      <article class="chapter"><span class="chapter-no">03</span><span class="chapter-icon">🏫</span><h3>京都大學校園</h3><p>Orientation、Student Affairs、校園問路、選課與補件。</p><span class="note">內容待補</span></article>
+      <article class="chapter"><span class="chapter-no">04</span><span class="chapter-icon">📱</span><h3>生活安頓</h3><p>銀行、手機／SIM、付款、表格與基本行政確認。</p><span class="note">內容待補</span></article>
+      <article class="chapter"><span class="chapter-no">05</span><span class="chapter-icon">🥬</span><h3>素食生活</h3><p>餐廳、學食、超商與高湯／動物性原料確認。</p><span class="note">內容待補</span></article>
+      <article class="chapter"><span class="chapter-no">06</span><span class="chapter-icon">🚌</span><h3>交通・購物・日常</h3><p>搭車、問路、買東西、退換貨與日常小問題。</p><span class="note">內容待補</span></article>
+      <article class="chapter"><span class="chapter-no">07</span><span class="chapter-icon">☕</span><h3>日文 small talk</h3><p>宿舍、同學、聚餐與剛認識時的自然聊天。</p><span class="note">內容待補</span></article>
+      <article class="chapter"><span class="chapter-no">08</span><span class="chapter-icon">🌏</span><h3>English at KU</h3><p>Orientation、seminar、clarification、office hours 與同學聊天。</p><span class="note">內容待補</span></article>
+      <article class="chapter"><span class="chapter-no">09</span><span class="chapter-icon">📚</span><h3>研究介紹</h3><p>30 秒／1 分鐘／2 分鐘版本與常見追問。</p><span class="note">內容待補</span></article>
+    </section>
+
+    <section class="paper records">
+      <div class="section-head inside">
+        <div><p class="small-label">累積</p><h2>學習紀錄</h2></div>
+        <p>同一天可有多次 session。</p>
+      </div>
+      <div class="table-wrap">
+        <table>
+          <thead><tr><th>日期</th><th>模式</th><th>主題</th><th>留下來的東西</th></tr></thead>
+          <tbody>
+            <tr><td>2026/08/12</td><td>Silent・15 分</td><td>市役所</td><td>住所登録／国民健康保険</td></tr>
+            <tr><td>2026/08/13</td><td>Silent</td><td>市役所</td><td>窗口回答與基本確認</td></tr>
+            <tr><td>2026/08/21</td><td>Voice・30 分</td><td>市役所</td><td>マイナンバーカード／聞き返し／宿舍說明</td></tr>
+          </tbody>
+        </table>
+      </div>
+      <p class="tiny">之後每次正式練習完成，這裡會追加一筆；主題頁也同步補上當天真正卡過的內容。</p>
+    </section>
+
+    <section class="paper sound">
+      <div>
+        <p class="small-label">試一下</p>
+        <h2>日文發音</h2>
+        <p id="sampleText" lang="ja">もう一度ゆっくりお願いします。</p>
+      </div>
+      <button id="speakBtn" type="button">▶ 聽一次</button>
+    </section>
+
+    <footer>最後更新：2026/08/24　🌿 先讀故事，再把它說成自己的話。</footer>
   </main>
-
   <script src="assets/app.js"></script>
 </body>
 </html>
