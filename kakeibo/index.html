@@ -8,16 +8,76 @@
   <meta name="apple-mobile-web-app-status-bar-style" content="default">
   <meta name="apple-mobile-web-app-title" content="京都家計簿">
   <title>セリナの京都生活 家計簿</title>
-  <link rel="stylesheet" href="./styles.css?v=5">
+  <link rel="stylesheet" href="./styles.css?v=7">
   <style>
-    /* iPhone Safari date control can keep an intrinsic width larger than its grid cell. */
+    /* v7: harden the expense form against iOS Safari intrinsic form-control widths. */
     .quick-add{overflow:hidden}
-    .field{min-width:0!important;max-width:100%!important;overflow:hidden}
+    .form-grid{grid-template-columns:minmax(0,1fr) minmax(0,1fr)!important}
+    .form-grid>.field,.field{min-width:0!important;max-width:100%!important;width:100%!important;overflow:hidden}
     .field input,.field select{display:block;width:100%!important;max-width:100%!important;min-width:0!important;box-sizing:border-box!important}
-    .field input[type="date"]{display:block!important;width:100%!important;max-width:100%!important;min-width:0!important;inline-size:100%!important;max-inline-size:100%!important;min-inline-size:0!important;-webkit-appearance:none;appearance:none;overflow:hidden;font-size:16px}
-    .field input[type="date"]::-webkit-date-and-time-value{min-width:0!important;width:100%!important;margin:0;padding:0;text-align:left}
-    .field input[type="date"]::-webkit-datetime-edit{min-width:0!important;padding:0}
-    @media(max-width:480px){.quick-add{padding-left:12px;padding-right:12px}.form-grid,.field{width:100%!important;max-width:100%!important;min-width:0!important}.field input[type="date"]{height:48px;padding:11px 12px}}
+
+    /* Native iOS date inputs keep a large intrinsic width. Keep the picker, but render our own label. */
+    .date-shell{
+      position:relative;
+      display:flex;
+      align-items:center;
+      justify-content:center;
+      width:100%;
+      min-width:0;
+      max-width:100%;
+      height:52px;
+      overflow:hidden;
+      border:1px solid var(--line);
+      border-radius:14px;
+      background:#fff;
+      color:var(--ink);
+    }
+    .date-shell #dateDisplay{
+      position:relative;
+      z-index:1;
+      display:block;
+      max-width:100%;
+      padding:0 12px;
+      overflow:hidden;
+      white-space:nowrap;
+      text-overflow:ellipsis;
+      text-align:center;
+      font-size:16px;
+      line-height:1;
+      pointer-events:none;
+    }
+    .date-shell #dateInput{
+      position:absolute!important;
+      inset:0!important;
+      z-index:2!important;
+      width:100%!important;
+      height:100%!important;
+      min-width:0!important;
+      max-width:100%!important;
+      margin:0!important;
+      padding:0!important;
+      border:0!important;
+      opacity:0!important;
+      cursor:pointer;
+      -webkit-appearance:none;
+      appearance:none;
+    }
+
+    /* Keep every control inside its own grid track in landscape. */
+    .amount-wrap,.input-row,.form-grid,.quick-add form{min-width:0;max-width:100%}
+    .amount-wrap input{min-width:0!important;max-width:100%!important}
+
+    /* Phones should stay single-column even in landscape; this trades a little scrolling for zero overlap. */
+    @media (max-width:932px){
+      .form-grid{grid-template-columns:minmax(0,1fr)!important}
+      .field.full{grid-column:auto!important}
+    }
+    @media (max-width:480px){
+      .quick-add{padding-left:12px;padding-right:12px}
+      .input-row{grid-template-columns:minmax(0,1fr) auto!important}
+      .add-btn{padding-left:16px;padding-right:16px}
+      .date-shell{height:48px}
+    }
   </style>
 </head>
 <body>
@@ -66,7 +126,7 @@
         <form id="expenseForm">
           <div class="input-row"><div class="amount-wrap"><span id="inputSymbol" class="symbol">¥</span><input id="amountInput" type="number" min="0" step="1" inputmode="decimal" placeholder="0" required></div><button class="add-btn" type="submit">記帳</button></div>
           <div class="form-grid">
-            <div class="field"><label>日期</label><input id="dateInput" type="date" required></div>
+            <div class="field"><label>日期</label><div class="date-shell"><span id="dateDisplay">—</span><input id="dateInput" type="date" required aria-label="日期"></div></div>
             <div class="field"><label>分類</label><select id="categoryInput"></select></div>
             <div class="field"><label>付款方式</label><select id="paymentInput"><option>玉山熊本熊卡</option><option>永豐提款 → 現金</option><option>日圓現金</option><option>其他</option></select></div>
             <div class="field"><label>必要性</label><select id="needInput"><option value="normal">一般支出</option><option value="necessary">必要支出</option><option value="treat">想買／享受</option></select></div>
@@ -99,7 +159,26 @@
 
 <div id="overspendModal" class="modal"><div class="sheet"><h3>🚨 這筆會超過本月預算</h3><div id="overspendText"></div><p><b>確定這是必要花費嗎？</b><br><span style="color:#80838d;font-size:12px">如果確定記帳，超支會依規則從之後的旅費／生活費扣回。</span></p><div class="sheet-actions"><button class="cancel" onclick="cancelPending()">先不要</button><button class="confirm" onclick="confirmPending()">確定，還是要花</button></div></div></div>
 
-<script src="./app-core.js?v=5"></script>
-<script src="./app-ui.js?v=5"></script>
+<script src="./app-core.js?v=7"></script>
+<script src="./app-ui.js?v=7"></script>
+<script>
+  (function(){
+    const input=document.getElementById('dateInput');
+    const display=document.getElementById('dateDisplay');
+    function syncDateDisplay(){
+      if(!input||!display)return;
+      const v=input.value;
+      if(!v){display.textContent='選擇日期';return;}
+      const parts=v.split('-').map(Number);
+      display.textContent=`${parts[0]}年${parts[1]}月${parts[2]}日`;
+    }
+    if(input){
+      input.addEventListener('change',syncDateDisplay);
+      input.addEventListener('input',syncDateDisplay);
+      requestAnimationFrame(syncDateDisplay);
+      setTimeout(syncDateDisplay,80);
+    }
+  })();
+</script>
 </body>
 </html>
