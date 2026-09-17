@@ -9,6 +9,16 @@
   <meta name="apple-mobile-web-app-title" content="京都家計簿">
   <title>セリナの京都生活 家計簿</title>
   <link rel="stylesheet" href="./styles.css?v=5">
+  <style>
+    /* iPhone Safari date control can keep an intrinsic width larger than its grid cell. */
+    .quick-add{overflow:hidden}
+    .field{min-width:0!important;max-width:100%!important;overflow:hidden}
+    .field input,.field select{display:block;width:100%!important;max-width:100%!important;min-width:0!important;box-sizing:border-box!important}
+    .field input[type="date"]{display:block!important;width:100%!important;max-width:100%!important;min-width:0!important;inline-size:100%!important;max-inline-size:100%!important;min-inline-size:0!important;-webkit-appearance:none;appearance:none;overflow:hidden;font-size:16px}
+    .field input[type="date"]::-webkit-date-and-time-value{min-width:0!important;width:100%!important;margin:0;padding:0;text-align:left}
+    .field input[type="date"]::-webkit-datetime-edit{min-width:0!important;padding:0}
+    @media(max-width:480px){.quick-add{padding-left:12px;padding-right:12px}.form-grid,.field{width:100%!important;max-width:100%!important;min-width:0!important}.field input[type="date"]{height:48px;padding:11px 12px}}
+  </style>
 </head>
 <body>
 <div class="app">
