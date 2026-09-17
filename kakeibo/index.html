@@ -8,9 +8,9 @@
   <meta name="apple-mobile-web-app-status-bar-style" content="default">
   <meta name="apple-mobile-web-app-title" content="京都家計簿">
   <title>セリナの京都生活 家計簿</title>
-  <link rel="stylesheet" href="./styles.css?v=7">
+  <link rel="stylesheet" href="./styles.css?v=8">
   <style>
-    /* v7: harden the expense form against iOS Safari intrinsic form-control widths. */
+    /* Expense form hardening for iPhone Safari. */
     .quick-add{overflow:hidden}
     .form-grid{grid-template-columns:minmax(0,1fr) minmax(0,1fr)!important}
     .form-grid>.field,.field{min-width:0!important;max-width:100%!important;width:100%!important;overflow:hidden}
@@ -18,65 +18,70 @@
 
     /* Native iOS date inputs keep a large intrinsic width. Keep the picker, but render our own label. */
     .date-shell{
-      position:relative;
-      display:flex;
-      align-items:center;
-      justify-content:center;
-      width:100%;
-      min-width:0;
-      max-width:100%;
-      height:52px;
-      overflow:hidden;
-      border:1px solid var(--line);
-      border-radius:14px;
-      background:#fff;
-      color:var(--ink);
+      position:relative;display:flex;align-items:center;justify-content:center;
+      width:100%;min-width:0;max-width:100%;height:52px;overflow:hidden;
+      border:1px solid var(--line);border-radius:14px;background:#fff;color:var(--ink);
     }
     .date-shell #dateDisplay{
-      position:relative;
-      z-index:1;
-      display:block;
-      max-width:100%;
-      padding:0 12px;
-      overflow:hidden;
-      white-space:nowrap;
-      text-overflow:ellipsis;
-      text-align:center;
-      font-size:16px;
-      line-height:1;
-      pointer-events:none;
+      position:relative;z-index:1;display:block;max-width:100%;padding:0 12px;
+      overflow:hidden;white-space:nowrap;text-overflow:ellipsis;text-align:center;
+      font-size:16px;line-height:1;pointer-events:none;
     }
     .date-shell #dateInput{
-      position:absolute!important;
-      inset:0!important;
-      z-index:2!important;
-      width:100%!important;
-      height:100%!important;
-      min-width:0!important;
-      max-width:100%!important;
-      margin:0!important;
-      padding:0!important;
-      border:0!important;
-      opacity:0!important;
-      cursor:pointer;
-      -webkit-appearance:none;
-      appearance:none;
+      position:absolute!important;inset:0!important;z-index:2!important;
+      width:100%!important;height:100%!important;min-width:0!important;max-width:100%!important;
+      margin:0!important;padding:0!important;border:0!important;opacity:0!important;cursor:pointer;
+      -webkit-appearance:none;appearance:none;
     }
 
-    /* Keep every control inside its own grid track in landscape. */
+    /* Amount field: reserve enough room for the wider NT$ prefix. */
     .amount-wrap,.input-row,.form-grid,.quick-add form{min-width:0;max-width:100%}
-    .amount-wrap input{min-width:0!important;max-width:100%!important}
+    .amount-wrap .symbol{left:14px!important;min-width:52px;text-align:left;white-space:nowrap;pointer-events:none}
+    .amount-wrap input{min-width:0!important;max-width:100%!important;padding-left:78px!important}
 
-    /* Phones should stay single-column even in landscape; this trades a little scrolling for zero overlap. */
+    /* Header: make the month selector and currency control fit on one phone-width row. */
+    .global-head{
+      display:grid!important;grid-template-columns:minmax(0,1fr) auto!important;
+      align-items:center!important;gap:6px!important;overflow:hidden;
+    }
+    .brand{min-width:0!important;max-width:none!important;overflow:hidden}
+    .brand strong{white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+    .head-actions{
+      display:grid!important;grid-template-columns:112px 62px!important;
+      align-items:center!important;gap:6px!important;min-width:0!important;max-width:180px!important;
+    }
+    .month-chip{
+      box-sizing:border-box!important;width:112px!important;min-width:112px!important;max-width:112px!important;
+      padding:8px 24px 8px 10px!important;font-size:13px!important;line-height:1.2!important;
+      text-align:center!important;text-overflow:clip!important;overflow:visible!important;
+    }
+    .currency-chip{
+      box-sizing:border-box!important;width:62px!important;min-width:62px!important;max-width:62px!important;
+      padding:8px 5px!important;font-size:13px!important;line-height:1.2!important;white-space:nowrap!important;
+    }
+
+    /* Phones stay single-column so no form control can overlap a neighbour. */
     @media (max-width:932px){
       .form-grid{grid-template-columns:minmax(0,1fr)!important}
       .field.full{grid-column:auto!important}
     }
     @media (max-width:480px){
       .quick-add{padding-left:12px;padding-right:12px}
-      .input-row{grid-template-columns:minmax(0,1fr) auto!important}
+      .input-row{grid-template-columns:minmax(0,1fr) 78px!important}
       .add-btn{padding-left:16px;padding-right:16px}
       .date-shell{height:48px}
+      .brand small{font-size:8.5px!important}
+      .brand strong{font-size:13px!important}
+      .head-actions{grid-template-columns:104px 54px!important;gap:5px!important;max-width:163px!important}
+      .month-chip{width:104px!important;min-width:104px!important;max-width:104px!important;padding:7px 22px 7px 8px!important;font-size:12px!important}
+      .currency-chip{width:54px!important;min-width:54px!important;max-width:54px!important;padding:7px 3px!important;font-size:12px!important}
+    }
+    @media (max-width:375px){
+      .brand small{display:none!important}
+      .brand strong{font-size:12px!important}
+      .head-actions{grid-template-columns:100px 50px!important;gap:4px!important;max-width:154px!important}
+      .month-chip{width:100px!important;min-width:100px!important;max-width:100px!important;font-size:11px!important}
+      .currency-chip{width:50px!important;min-width:50px!important;max-width:50px!important;font-size:11px!important}
     }
   </style>
 </head>
@@ -84,7 +89,7 @@
 <div class="app">
   <header class="global-head">
     <div class="brand"><small>🌸 京都交換生活</small><strong>セリナの京都生活 家計簿</strong></div>
-    <div class="head-actions"><select id="monthSelect" class="month-chip" aria-label="月份"></select><button id="globalCurrency" class="currency-chip" onclick="toggleCurrency()">¥ JPY</button></div>
+    <div class="head-actions"><select id="monthSelect" class="month-chip" aria-label="月份"></select><button id="globalCurrency" class="currency-chip" onclick="toggleCurrency()">¥</button></div>
   </header>
 
   <main>
@@ -159,12 +164,13 @@
 
 <div id="overspendModal" class="modal"><div class="sheet"><h3>🚨 這筆會超過本月預算</h3><div id="overspendText"></div><p><b>確定這是必要花費嗎？</b><br><span style="color:#80838d;font-size:12px">如果確定記帳，超支會依規則從之後的旅費／生活費扣回。</span></p><div class="sheet-actions"><button class="cancel" onclick="cancelPending()">先不要</button><button class="confirm" onclick="confirmPending()">確定，還是要花</button></div></div></div>
 
-<script src="./app-core.js?v=7"></script>
-<script src="./app-ui.js?v=7"></script>
+<script src="./app-core.js?v=8"></script>
+<script src="./app-ui.js?v=8"></script>
 <script>
   (function(){
     const input=document.getElementById('dateInput');
     const display=document.getElementById('dateDisplay');
+    const currencyButton=document.getElementById('globalCurrency');
     function syncDateDisplay(){
       if(!input||!display)return;
       const v=input.value;
@@ -172,11 +178,27 @@
       const parts=v.split('-').map(Number);
       display.textContent=`${parts[0]}年${parts[1]}月${parts[2]}日`;
     }
+    function compactCurrencyButton(){
+      if(!currencyButton)return;
+      const txt=currencyButton.textContent||'';
+      if(txt.includes('TWD')||txt.includes('NT$')) currencyButton.textContent='NT$';
+      else currencyButton.textContent='¥';
+      currencyButton.setAttribute('aria-label', state.currency==='TWD'?'目前顯示台幣，點擊切換日圓':'目前顯示日圓，點擊切換台幣');
+    }
     if(input){
       input.addEventListener('change',syncDateDisplay);
       input.addEventListener('input',syncDateDisplay);
       requestAnimationFrame(syncDateDisplay);
       setTimeout(syncDateDisplay,80);
+    }
+    if(currencyButton){
+      compactCurrencyButton();
+      currencyButton.addEventListener('click',()=>setTimeout(compactCurrencyButton,0));
+      const observer=new MutationObserver(()=>{
+        const txt=currencyButton.textContent||'';
+        if(txt.includes('TWD')||txt.includes('JPY')) setTimeout(compactCurrencyButton,0);
+      });
+      observer.observe(currencyButton,{childList:true,characterData:true,subtree:true});
     }
   })();
 </script>
