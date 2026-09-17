@@ -1,0 +1,171 @@
+<!doctype html>
+<html lang="zh-Hant">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+  <meta name="theme-color" content="#ff9a55">
+  <meta name="apple-mobile-web-app-capable" content="yes">
+  <meta name="apple-mobile-web-app-status-bar-style" content="default">
+  <meta name="apple-mobile-web-app-title" content="京都家計簿">
+  <title>セリナの京都生活 家計簿</title>
+  <link rel="stylesheet" href="./styles.css?v=8">
+  <style>
+    /* v10 iPhone layout fixes */
+    .global-head{display:grid!important;grid-template-columns:minmax(0,1fr) auto!important;align-items:center!important;gap:6px!important;overflow:hidden}
+    .brand{min-width:0!important;max-width:none!important;overflow:hidden}.brand strong{white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+    .head-actions{display:flex!important;align-items:center!important;gap:6px!important;min-width:0!important;flex:0 0 auto!important}
+    .month-wrap{position:relative;width:116px;min-width:116px;height:42px;flex:0 0 116px}
+    .month-chip{width:100%!important;height:100%!important;min-width:0!important;max-width:none!important;margin:0!important;padding:0 30px 0 12px!important;-webkit-appearance:none!important;appearance:none!important;background:#fff!important;white-space:nowrap!important;font-size:13px!important;line-height:1!important;text-align:center!important;text-align-last:center!important;overflow:visible!important}
+    .month-arrow{position:absolute;right:11px;top:50%;transform:translateY(-54%);font-size:16px;font-weight:900;color:#4d4846;pointer-events:none;line-height:1}
+    .currency-chip{width:62px!important;min-width:62px!important;max-width:62px!important;height:42px!important;padding:0 8px!important;white-space:nowrap!important}
+    .amount-wrap{min-width:0!important;display:grid!important;grid-template-columns:auto minmax(0,1fr)!important;align-items:center!important;border:2px solid #f0dfd4!important;border-radius:18px!important;background:#fff!important;overflow:hidden!important}
+    .amount-wrap:focus-within{border-color:var(--mikan)!important}
+    .amount-wrap .symbol{position:static!important;transform:none!important;display:block!important;min-width:58px!important;padding:0 0 0 16px!important;font-weight:900!important;color:var(--mikan-deep)!important;font-size:18px!important;white-space:nowrap!important;pointer-events:none!important}
+    .amount-wrap input{min-width:0!important;width:100%!important;border:0!important;border-radius:0!important;padding:13px 14px 13px 6px!important;font-size:25px!important;font-weight:900!important;outline:none!important;background:transparent!important}
+    .quick-add{overflow:hidden}.form-grid{grid-template-columns:minmax(0,1fr)!important}.field.full{grid-column:auto!important}.field{min-width:0!important;max-width:100%!important;width:100%!important;overflow:hidden}.field input,.field select{display:block;width:100%!important;max-width:100%!important;min-width:0!important;box-sizing:border-box!important}
+    .date-shell{position:relative;display:flex;align-items:center;justify-content:center;width:100%;min-width:0;max-width:100%;height:52px;overflow:hidden;border:1px solid var(--line);border-radius:14px;background:#fff;color:var(--ink)}
+    .date-shell #dateDisplay{position:relative;z-index:1;display:block;max-width:100%;padding:0 12px;overflow:hidden;white-space:nowrap;text-overflow:ellipsis;text-align:center;font-size:16px;line-height:1;pointer-events:none}
+    .date-shell #dateInput{position:absolute!important;inset:0!important;z-index:2!important;width:100%!important;height:100%!important;min-width:0!important;max-width:100%!important;margin:0!important;padding:0!important;border:0!important;opacity:0!important;cursor:pointer;-webkit-appearance:none;appearance:none}
+    @media(max-width:480px){.quick-add{padding-left:12px;padding-right:12px}.input-row{grid-template-columns:minmax(0,1fr) 78px!important}.add-btn{padding-left:16px;padding-right:16px}.date-shell{height:48px}.brand small{font-size:8.5px!important}.brand strong{font-size:13px!important}.month-wrap{width:112px;min-width:112px;flex-basis:112px}.currency-chip{width:54px!important;min-width:54px!important;max-width:54px!important;font-size:12px!important}}
+    @media(max-width:375px){.brand small{display:none!important}.brand strong{font-size:12px!important}.month-wrap{width:108px;min-width:108px;flex-basis:108px}.currency-chip{width:50px!important;min-width:50px!important;max-width:50px!important;font-size:11px!important}}
+  </style>
+</head>
+<body>
+<div class="app">
+  <header class="global-head">
+    <div class="brand">
+      <small>🌸 京都交換生活</small>
+      <strong>セリナの京都生活 家計簿</strong>
+    </div>
+    <div class="head-actions">
+      <div class="month-wrap"><select id="monthSelect" class="month-chip" aria-label="月份"></select><span class="month-arrow" aria-hidden="true">⌄</span></div>
+      <button id="globalCurrency" class="currency-chip" onclick="toggleCurrency()">¥</button>
+    </div>
+  </header>
+
+  <main>
+    <section id="page-home" class="page active">
+      <div class="hero">
+        <div class="hero-head">
+          <div>
+            <div class="hero-label">本月還可以花</div>
+            <div class="hero-amount" id="heroRemain">—</div>
+            <div class="hero-sub" id="heroSub">—</div>
+          </div>
+          <div id="progressRing" class="ring" data-pct="0%" style="--p:0deg"></div>
+        </div>
+        <div class="hero-grid">
+          <div class="hero-mini"><div class="k">本月預算</div><div id="heroBudget" class="v">—</div></div>
+          <div class="hero-mini"><div class="k">已經花了</div><div id="heroSpent" class="v">—</div></div>
+          <div class="hero-mini"><div class="k">今天安全額度</div><div id="heroDaily" class="v">—</div></div>
+        </div>
+      </div>
+      <div class="fxbar">
+        <div class="fx-left"><span id="fxDot" class="fx-dot"></span><div id="fxText" class="fx-text">正在取得今日匯率…</div></div>
+        <button class="mini-btn" onclick="refreshFX(true)">更新</button>
+      </div>
+      <div id="alertBox" class="alert"></div>
+
+      <div class="section-title"><h2>今月の予算 🧺</h2><span>每個項目還剩多少</span></div>
+      <div id="catGrid" class="cat-grid"></div>
+    </section>
+
+    <section id="page-book" class="page">
+      <div class="segmented">
+        <button id="calendarTab" class="active" onclick="setBookMode('calendar')">行事曆</button>
+        <button id="listTab" onclick="setBookMode('list')">清單</button>
+      </div>
+      <div class="book-toolbar">
+        <button class="arrow-btn" onclick="shiftMonth(-1)">‹</button>
+        <div id="bookMonthLabel" class="book-month">—</div>
+        <button class="arrow-btn" onclick="shiftMonth(1)">›</button>
+      </div>
+      <div class="book-search">
+        <input id="searchInput" placeholder="搜尋備註或分類…" oninput="renderBook()">
+        <button onclick="clearSearch()">⌕</button>
+      </div>
+
+      <div id="calendarView">
+        <div class="calendar-shell">
+          <div class="week-head"><div>週日</div><div>週一</div><div>週二</div><div>週三</div><div>週四</div><div>週五</div><div>週六</div></div>
+          <div id="calendarGrid" class="calendar-grid"></div>
+        </div>
+        <div id="selectedDayTitle" class="selected-day-title"></div>
+        <div id="dailySummary" class="daily-summary"></div>
+        <div id="dailyTransactions" class="tx-list"></div>
+      </div>
+
+      <div id="listView" style="display:none">
+        <div id="monthList"></div>
+      </div>
+    </section>
+
+    <section id="page-add" class="page">
+      <div class="section-title"><h2>快速記一筆 ✍🏻</h2><span id="inputModeText">輸入日圓</span></div>
+      <div class="quick-add">
+        <form id="expenseForm">
+          <div class="input-row">
+            <div class="amount-wrap"><span id="inputSymbol" class="symbol">¥</span><input id="amountInput" type="number" min="0" step="1" inputmode="decimal" placeholder="0" required></div>
+            <button class="add-btn" type="submit">記帳</button>
+          </div>
+          <div class="form-grid">
+            <div class="field"><label>日期</label><div class="date-shell"><span id="dateDisplay">—</span><input id="dateInput" type="date" required aria-label="日期"></div></div>
+            <div class="field"><label>分類</label><select id="categoryInput"></select></div>
+            <div class="field"><label>付款方式</label><select id="paymentInput"><option>玉山熊本熊卡</option><option>永豐提款 → 現金</option><option>日圓現金</option><option>其他</option></select></div>
+            <div class="field"><label>必要性</label><select id="needInput"><option value="normal">一般支出</option><option value="necessary">必要支出</option><option value="treat">想買／享受</option></select></div>
+            <div class="field full"><label>備註</label><input id="noteInput" placeholder="例：超市、咖啡、藥妝、京都站午餐"></div>
+          </div>
+        </form>
+      </div>
+      <div class="section-title"><h2>最近記錄 🍵</h2><span id="recentCount"></span></div>
+      <div id="recentTransactions" class="tx-list"></div>
+    </section>
+
+    <section id="page-analysis" class="page">
+      <div class="section-title"><h2>花費趨勢 📈</h2><span>預算 vs 實際</span></div>
+      <div class="card">
+        <canvas id="trendCanvas"></canvas>
+        <div id="insight" class="insight">開始記帳後，這裡會分析你每月的花費速度與趨勢。</div>
+        <div class="section-title" style="margin-top:16px"><h2 style="font-size:15px">本月分類</h2><span>支出占比</span></div>
+        <div id="analysisCats" class="analysis-cats"></div>
+      </div>
+    </section>
+
+    <section id="page-settings" class="page">
+      <div class="section-title"><h2>設定・備份 ⚙️</h2><span>資料存在這台裝置</span></div>
+      <div class="card">
+        <div class="tool-grid">
+          <button class="tool-btn" onclick="manualFX()">手動改匯率</button>
+          <button class="tool-btn" onclick="exportJSON()">匯出備份</button>
+          <button class="tool-btn" onclick="document.getElementById('importFile').click()">匯入備份</button>
+          <button class="tool-btn" onclick="exportCSV()">匯出 CSV</button>
+          <input id="importFile" type="file" accept=".json" hidden>
+        </div>
+        <div class="rule-box"><b>跨月規則：</b><br>生活費省下來 → 自動加到下個月。<br>小額超支（預設 NT$2,000 內）→ 優先扣未來旅費。<br>大額超支 → 預設 70% 扣旅費、30% 扣下月生活費。<br>本月使用達 85% 或預估月底會超支時，首頁會出現非常醒目的紅色警告。</div>
+      </div>
+    </section>
+  </main>
+</div>
+
+<nav class="bottom-nav">
+  <button id="nav-home" class="nav-btn active" onclick="showPage('home')"><b>🏠</b>總覽</button>
+  <button id="nav-book" class="nav-btn" onclick="showPage('book')"><b>📒</b>帳本</button>
+  <button id="nav-add" class="nav-btn add" onclick="showPage('add')"><b>＋</b>記一筆</button>
+  <button id="nav-analysis" class="nav-btn" onclick="showPage('analysis')"><b>📊</b>圖表分析</button>
+  <button id="nav-settings" class="nav-btn" onclick="showPage('settings')"><b>⚙️</b>設定</button>
+</nav>
+
+<div id="overspendModal" class="modal">
+  <div class="sheet">
+    <h3>🚨 這筆會超過本月預算</h3>
+    <div id="overspendText"></div>
+    <p><b>確定這是必要花費嗎？</b><br><span style="color:#80838d;font-size:12px">如果確定記帳，超支會依規則從之後的旅費／生活費扣回。</span></p>
+    <div class="sheet-actions"><button class="cancel" onclick="cancelPending()">先不要</button><button class="confirm" onclick="confirmPending()">確定，還是要花</button></div>
+  </div>
+</div>
+
+<script src="./app-core.js?v=8"></script>
+<script src="./app-ui.js?v=8"></script>
+<script src="./v10-enhancements.js?v=10"></script>
+</body>
+</html>
