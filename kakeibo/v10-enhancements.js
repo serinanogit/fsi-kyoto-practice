@@ -13,8 +13,9 @@
     {id:'esun_jpy',name:'玉山｜日圓',currency:'JPY'},
     {id:'sinopac_twd',name:'永豐｜台幣',currency:'TWD'},
     {id:'sinopac_jpy',name:'永豐｜日圓',currency:'JPY'},
-    {id:'post_twd',name:'郵局｜活存',currency:'TWD'},
-    {id:'post_fixed',name:'郵局｜定存',currency:'TWD'},
+    {id:'post_twd',name:'台灣郵局｜活存',currency:'TWD'},
+    {id:'post_fixed',name:'台灣郵局｜定存',currency:'TWD'},
+    {id:'japan_post_jpy',name:'日本郵局｜日圓',currency:'JPY'},
     {id:'ctbc_twd',name:'中信｜台幣',currency:'TWD'},
     {id:'chb_twd',name:'彰銀｜台幣',currency:'TWD'},
     {id:'cash_twd',name:'手邊現金｜台幣',currency:'TWD'},
@@ -98,7 +99,7 @@
     const src=entryType==='income'?INCOME_CATS:CATS;cs.innerHTML='';
     Object.entries(src).forEach(([k,v])=>{const o=document.createElement('option');o.value=k;o.textContent=`${v.icon} ${v.name}`;cs.appendChild(o)});
     const payment=document.getElementById('paymentInput');
-    payment.innerHTML=entryType==='income'?'<option>銀行入帳</option><option>現金收入</option><option>其他</option>':'<option>玉山熊本熊卡</option><option>永豐提款 → 現金</option><option>日圓現金</option><option>其他</option>';
+    payment.innerHTML=entryType==='income'?'<option>玉山｜日圓</option><option>永豐｜日圓</option><option>日本郵局｜日圓</option><option>現金收入</option><option>其他</option>':'<option>玉山熊本熊卡</option><option>永豐提款 → 現金</option><option>日圓現金</option><option>其他</option>';
     const need=document.getElementById('needInput');need.disabled=entryType==='income';need.style.opacity=entryType==='income'?'.45':'1';
   }
 
