@@ -2,9 +2,9 @@
   const css=document.createElement('style');
   css.textContent=`
     /* v21: hard fix iOS date input overflow in edit modal */
-    #editTxModal .edit-grid{overflow:hidden!important}
-    #editTxModal .edit-field{min-width:0!important;max-width:100%!important;overflow:hidden!important}
-    #editTxModal .edit-field.v21-date-field{min-width:0!important;max-width:100%!important;overflow:hidden!important}
+    #editTxModal .edit-grid{overflow:hidden!important;grid-template-columns:minmax(0,1fr) minmax(0,1fr)!important}
+    #editTxModal .edit-field{min-width:0!important;max-width:100%!important;width:100%!important;overflow:hidden!important;box-sizing:border-box!important}
+    #editTxModal .edit-field.v21-date-field{min-width:0!important;max-width:100%!important;width:100%!important;overflow:hidden!important}
     #editTxModal .v21-date-wrap{
       position:relative!important;
       display:flex!important;
@@ -14,6 +14,8 @@
       max-width:100%!important;
       min-width:0!important;
       height:39px!important;
+      margin:0!important;
+      padding:0!important;
       border:1px solid var(--line)!important;
       border-radius:12px!important;
       background:#fff!important;
@@ -25,10 +27,10 @@
       width:100%!important;
       min-width:0!important;
       max-width:100%!important;
-      padding:0 8px!important;
+      padding:0 6px!important;
       box-sizing:border-box!important;
       text-align:center!important;
-      font-size:13px!important;
+      font-size:12px!important;
       line-height:1!important;
       white-space:nowrap!important;
       overflow:hidden!important;
@@ -53,7 +55,11 @@
       box-sizing:border-box!important;
       cursor:pointer!important;
     }
-    @media(max-height:700px){#editTxModal .v21-date-wrap{height:35px!important}.v21-date-text{font-size:12px!important}}
+    @media(max-width:430px){
+      #editTxModal .edit-grid{grid-template-columns:minmax(0,1fr) minmax(0,1fr)!important;column-gap:7px!important}
+      #editTxModal .v21-date-text{font-size:11.5px!important;padding:0 4px!important}
+    }
+    @media(max-height:700px){#editTxModal .v21-date-wrap{height:35px!important}.v21-date-text{font-size:11px!important}}
   `;
   document.head.appendChild(css);
 
@@ -64,33 +70,48 @@
   }
   function install(){
     const input=document.getElementById('editDate');
-    if(!input||input.dataset.v21Installed)return;
-    input.dataset.v21Installed='1';
+    if(!input)return;
     const field=input.closest('.edit-field');
     if(!field)return;
     field.classList.add('v21-date-field');
+
     let wrap=input.closest('.v21-date-wrap');
     if(!wrap){
-      wrap=document.createElement('div');
-      wrap.className='v21-date-wrap';
-      const text=document.createElement('span');
-      text.className='v21-date-text';
-      text.textContent=fmt(input.value);
-      input.parentNode.insertBefore(wrap,input);
-      wrap.appendChild(text);
-      wrap.appendChild(input);
+      const oldShell=input.closest('.edit-date-shell');
+      if(oldShell){
+        wrap=oldShell;
+        wrap.classList.add('v21-date-wrap');
+        const oldDisplay=wrap.querySelector('.edit-date-display');
+        if(oldDisplay){oldDisplay.classList.add('v21-date-text');oldDisplay.textContent=fmt(input.value)}
+      }else{
+        wrap=document.createElement('div');
+        wrap.className='v21-date-wrap';
+        const text=document.createElement('span');
+        text.className='v21-date-text';
+        text.textContent=fmt(input.value);
+        input.parentNode.insertBefore(wrap,input);
+        wrap.appendChild(text);
+        wrap.appendChild(input);
+      }
     }
-    const sync=()=>{const text=wrap.querySelector('.v21-date-text');if(text)text.textContent=fmt(input.value)};
-    input.addEventListener('change',sync);
-    input.addEventListener('input',sync);
+    let text=wrap.querySelector('.v21-date-text');
+    if(!text){
+      text=document.createElement('span');
+      text.className='v21-date-text';
+      wrap.insertBefore(text,input);
+    }
+    const sync=()=>{text.textContent=fmt(input.value)};
+    if(!input.dataset.v21Installed){
+      input.dataset.v21Installed='1';
+      input.addEventListener('change',sync);
+      input.addEventListener('input',sync);
+    }
     sync();
   }
   function syncOnShow(){
     install();
-    const modal=document.getElementById('editTxModal');
-    if(!modal)return;
     const input=document.getElementById('editDate');
-    const text=modal.querySelector('.v21-date-text');
+    const text=document.querySelector('#editTxModal .v21-date-text');
     if(input&&text)text.textContent=fmt(input.value);
   }
   const obs=new MutationObserver(()=>setTimeout(syncOnShow,0));
