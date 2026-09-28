@@ -32,3 +32,13 @@ footer{text-align:center;color:#8e8175;font-size:.84rem;padding:26px 8px 0}
 
 @media(max-width:850px){.chapters{grid-template-columns:repeat(2,minmax(0,1fr))}.cover-emoji{font-size:3.5rem}.story-map{grid-template-columns:repeat(2,minmax(0,1fr))}.mini-cards{grid-template-columns:repeat(2,minmax(0,1fr))}}
 @media(max-width:620px){.book{width:min(100% - 18px,1080px);padding-top:16px}.cover,.story-cover{padding:25px 22px;align-items:flex-start}.cover-emoji{font-size:2.6rem}.chapters,.branch-grid,.two-col{grid-template-columns:1fr}.section-head{display:block}.section-head>p{margin-top:5px}.two-col .section-head{min-height:auto}.sound{align-items:flex-start;flex-direction:column}.sound button{width:100%}.story-map{grid-template-columns:1fr}.dialogue{padding:15px 11px}.bubble{max-width:84%;padding:11px 12px}.who{width:38px;flex-basis:38px}.mini-cards{grid-template-columns:1fr 1fr}.mission-box,.prose-card,.phrase-list,.grammar-card,.fact-note,.after-practice,.finish-card{padding:21px 19px}}
+
+
+/* Furigana */
+ruby { ruby-position: over; }
+rt {
+  font-size: 0.56em;
+  line-height: 1;
+  letter-spacing: 0.02em;
+  font-weight: 500;
+}
