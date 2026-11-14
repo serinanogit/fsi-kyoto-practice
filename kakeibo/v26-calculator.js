@@ -26,11 +26,12 @@
  <div class="ser-calc-head"><strong>🧮 記帳計算機 <span id="calcCurr"></span></strong><button type="button" class="ser-calc-close" data-key="close">×</button></div>
  <div class="ser-calc-screen"><div id="calcExpression" class="ser-calc-expr">0</div><div id="calcPreview" class="ser-calc-preview"></div></div>
  <div class="ser-calc-grid">
- <button type="button" class="clear" data-key="AC">AC</button><button type="button" data-key="back">⌫</button><button type="button" data-key="00">00</button><button type="button" class="op" data-key="÷">÷</button>
- <button type="button" data-key="7">7</button><button type="button" data-key="8">8</button><button type="button" data-key="9">9</button><button type="button" class="op" data-key="×">×</button>
- <button type="button" data-key="4">4</button><button type="button" data-key="5">5</button><button type="button" data-key="6">6</button><button type="button" class="op" data-key="−">−</button>
- <button type="button" data-key="1">1</button><button type="button" data-key="2">2</button><button type="button" data-key="3">3</button><button type="button" class="op" data-key="+">+</button>
- <button type="button" data-key=".">.</button><button type="button" data-key="0">0</button><button type="button" class="strong" data-key="=">=</button><button type="button" class="done" data-key="done">✓ 套用</button>
+ <button type="button" class="clear" data-key="AC">AC</button><button type="button" data-key="back">⌫</button><button type="button" data-key="00">00</button><button type="button" data-key="000">000</button>
+ <button type="button" data-key="7">7</button><button type="button" data-key="8">8</button><button type="button" data-key="9">9</button><button type="button" class="op" data-key="÷">÷</button>
+ <button type="button" data-key="4">4</button><button type="button" data-key="5">5</button><button type="button" data-key="6">6</button><button type="button" class="op" data-key="×">×</button>
+ <button type="button" data-key="1">1</button><button type="button" data-key="2">2</button><button type="button" data-key="3">3</button><button type="button" class="op" data-key="−">−</button>
+ <button type="button" data-key=".">.</button><button type="button" data-key="0">0</button><button type="button" class="strong" data-key="=">=</button><button type="button" class="op" data-key="+">+</button>
+ <button type="button" class="done" style="grid-column:span 4" data-key="done">✓ 套用到記帳金額</button>
  </div><div class="ser-calc-hint">例：250 + 180 + 70 = 500，套用後才會進入記帳表單</div>
  </div>`;document.body.appendChild(mask);
  let expr='',overflow='';
