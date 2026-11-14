@@ -3,7 +3,7 @@
   const months=MONTHS.slice();
   const empty=()=>Object.fromEntries(months.map(m=>[m,{daily:0,kansai:0,bigTrip:0,oneoff:0}]));
   const totals=p=>Object.values(p).reduce((s,v)=>s+(+v||0),0);
-  const avail=(m,c,carry,plans)=>Math.max(0,(+plans[m]?.[c]||0)+(+carry[m]?.[c]||0));
+  const avail=(m,c,carry,plans)=>Math.max(0,(+plans[m]?.[c]||0)+(+carry[m]?.[c]||0)-(m>=currentYM()?catSpent(m,c):0));
 
   function compute(plans=PLANS,now=currentYM()){
     const carry=empty(),excess=[],unfunded=[];
