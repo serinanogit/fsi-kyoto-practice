@@ -1,6 +1,6 @@
 (() => {
  const input=document.getElementById('amountInput');if(!input)return;
- input.readOnly=true;input.setAttribute('inputmode','none');input.placeholder='點這裡用計算機輸入';
+ input.readOnly=true;input.setAttribute('inputmode','none');input.placeholder='';
  const css=document.createElement('style');
  css.textContent=`
  #amountInput[readonly]{cursor:pointer;caret-color:transparent}
