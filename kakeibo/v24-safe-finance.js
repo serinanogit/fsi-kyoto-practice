@@ -38,9 +38,9 @@
 
  const RECOMMEND={
   '2026-11':{lodging:8620,fixed:2500,daily:23880,kansai:3000,bigTrip:0,oneoff:2000},
-  '2026-12':{lodging:8620,fixed:2500,daily:25880,kansai:3000,bigTrip:0,oneoff:0},
-  '2027-01':{lodging:8620,fixed:2500,daily:25880,kansai:3000,bigTrip:0,oneoff:0},
-  '2027-02':{lodging:8620,fixed:2500,daily:25880,kansai:3000,bigTrip:0,oneoff:0},
+  '2026-12':{lodging:8620,fixed:2500,daily:24880,kansai:3000,bigTrip:0,oneoff:0},
+  '2027-01':{lodging:8620,fixed:2500,daily:24880,kansai:3000,bigTrip:0,oneoff:0},
+  '2027-02':{lodging:8620,fixed:2500,daily:24880,kansai:3000,bigTrip:0,oneoff:0},
   '2027-03':{lodging:26130,fixed:2500,daily:19370,kansai:4000,bigTrip:0,oneoff:0},
   '2027-04':{lodging:6566,fixed:412,daily:3022,kansai:0,bigTrip:0,oneoff:0}
  };
