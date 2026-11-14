@@ -152,7 +152,7 @@
   const card=document.createElement('section');card.id='safeFinanceCard';card.className='card';
   card.innerHTML=`
    <h3>🔎 日本資金對帳・安全預算 v24</h3>
-   <div class="sf-note">對帳只算勾選的日本使用資金，凍結資產和投資不當作可以花的生活費。建立基準≠對帳成功。</div>
+   <div class="sf-note">對帳只算勾選的日本使用資金，凍結資產和投資不當作可以花的生活費。建立基準≠對帳成功。舊版基準會保留在舊設定中，但不作為新的核對依據。</div>
    <details><summary>核對：哪些帳戶屬於日本使用資金？</summary><div id="sfAccounts"></div><div class="sf-note">國泰、郵局及其他封印資產預設不納入。若你自己勾選它們，會改變比較範圍並清除舊基準。</div>
    <h4>日本生活用信用卡（未繳款會扣掉）</h4><div id="sfCards"></div></details>
    <div class="sf-grid"><div class="sf-stat"><small>實際日本可用淨額</small><strong id="sfActual">—</strong></div><div class="sf-stat"><small>追蹤基準／帳上應有</small><strong id="sfExpected">—</strong></div></div>
@@ -186,8 +186,10 @@
   document.getElementById('sfPlanApply').onclick=applyProposal;
   drawChecks();
  }
+ let cardSignature='';
  function drawChecks(){
   const acc=document.getElementById('sfAccounts'),cards=document.getElementById('sfCards');
+  cardSignature=(state.creditCards||[]).map(c=>String(c.id)+':'+String(c.name)).join('|');
   if(!acc||!cards)return;
   acc.innerHTML='';cards.innerHTML='';
   ACCOUNT.forEach(a=>{
@@ -266,6 +268,8 @@
  }
  function update(){
   financeUI();
+  const currentCardSignature=(state.creditCards||[]).map(c=>String(c.id)+':'+String(c.name)).join('|');
+  if(currentCardSignature!==cardSignature)drawChecks();
   const status=document.getElementById('sfStatus');if(!status)return;
   const a=assetPool(),r=diff();
   document.getElementById('sfActual').textContent=fmt(a.value);
