@@ -14,7 +14,13 @@
  const NORMAL=['esun_twd','esun_jpy','sinopac_twd','sinopac_jpy','cash_jpy'];
  C.accounts=Array.isArray(C.accounts)?C.accounts:(Array.isArray(legacy.j?.accounts)?legacy.j.accounts.slice():NORMAL);
  C.cards=Array.isArray(C.cards)?C.cards:(Array.isArray(legacy.j?.cards)?legacy.j.cards.slice():[]);
- C.reserve=Number.isFinite(+C.reserve)?Math.max(0,+C.reserve):20000;
+ // v30: one-time opt-out of the older mandatory Japanese cash buffer.
+ // Preserve any later changes the user makes to this setting.
+ if(!C.reserveV30Migrated){
+  C.reserve=0;
+  C.reserveV30Migrated=true;
+ }
+ C.reserve=Number.isFinite(+C.reserve)?Math.max(0,+C.reserve):0;
  C.threshold=Number.isFinite(+C.threshold)?Math.max(0,+C.threshold):1000;
  C.plans=C.plans||{};
 
@@ -38,9 +44,9 @@
 
  const RECOMMEND={
   '2026-11':{lodging:8620,fixed:2500,daily:23880,kansai:3000,bigTrip:0,oneoff:2000},
-  '2026-12':{lodging:8620,fixed:2500,daily:24880,kansai:3000,bigTrip:0,oneoff:0},
-  '2027-01':{lodging:8620,fixed:2500,daily:24880,kansai:3000,bigTrip:0,oneoff:0},
-  '2027-02':{lodging:8620,fixed:2500,daily:24880,kansai:3000,bigTrip:0,oneoff:0},
+  '2026-12':{lodging:8620,fixed:2500,daily:24880,kansai:3000,bigTrip:12000,oneoff:0},
+  '2027-01':{lodging:8620,fixed:2500,daily:24880,kansai:3000,bigTrip:12000,oneoff:0},
+  '2027-02':{lodging:8620,fixed:2500,daily:24880,kansai:3000,bigTrip:17000,oneoff:0},
   '2027-03':{lodging:26130,fixed:2500,daily:19370,kansai:4000,bigTrip:0,oneoff:0},
   '2027-04':{lodging:6566,fixed:412,daily:3022,kansai:0,bigTrip:0,oneoff:0}
  };
@@ -151,7 +157,7 @@
   if(!settings||document.getElementById('safeFinanceCard'))return;
   const card=document.createElement('section');card.id='safeFinanceCard';card.className='card';
   card.innerHTML=`
-   <h3>🔎 日本資金對帳・安全預算 v24</h3>
+   <h3>🔎 日本資金對帳・彈性預算 v30</h3>
    <div class="sf-note">對帳只算勾選的日本使用資金，凍結資產和投資不當作可以花的生活費。建立基準≠對帳成功。舊版基準會保留在舊設定中，但不作為新的核對依據。</div>
    <details><summary>核對：哪些帳戶屬於日本使用資金？</summary><div id="sfAccounts"></div><div class="sf-note">國泰、郵局及其他封印資產預設不納入。若你自己勾選它們，會改變比較範圍並清除舊基準。</div>
    <h4>日本生活用信用卡（未繳款會扣掉）</h4><div id="sfCards"></div></details>
@@ -161,12 +167,12 @@
    <div class="sf-note">按下「建立」後，若沒有新交易或餘額變動，只能顯示「尚無可檢驗變動」，不會假裝已對帳成功。</div>
    <div class="sf-divider"></div>
    <h3>🧺 依實際支出重新規劃</h3>
-   <div class="sf-note">這個功能與對帳差額完全分開，任何時候都能重新估算。目標接近每月 NT$40,000（已含宿舍與小旅行）；大旅行不額外加預算。</div>
-   <div class="sf-check"><label>日本資金池最低安全緩衝</label><input id="sfReserve" type="number" inputmode="numeric" step="1000" min="0" value="20000"><b>NT$</b></div>
+   <div class="sf-note">這個功能與對帳差額分開，可自主規劃旅行。12月旅行目標 NT$15,000、1月 NT$15,000、2月 NT$20,000（包含原本每月 NT$3,000 關西小旅行），不會自動挪用其他銀行資金。</div>
+   <div class="sf-check"><label>日本資金池額外安全緩衝（可設 0）</label><input id="sfReserve" type="number" inputmode="numeric" step="1000" min="0" value="0"><b>NT$</b></div>
    <div class="sf-check"><label>對帳差額提醒門檻</label><input id="sfThreshold" type="number" inputmode="numeric" step="100" min="0" value="1000"><b>NT$</b></div>
    <div id="sfPlanRows"></div><div id="sfPlanFoot" class="sf-result"></div>
-   <button type="button" id="sfPlanApply" class="sf-btn">確認套用安全版月預算</button>
-   <div class="sf-risk">🔒 國泰緊急預備金與台灣郵局資金都不在這裡拿來提高消費上限。12月、2月原先另外編列的各 NT$30,000 大旅行暫不列入新方案；要出發需另外檢查資金或收入。</div>
+   <button type="button" id="sfPlanApply" class="sf-btn">確認套用含旅行費的月預算</button>
+   <div class="sf-risk">🔒 國泰、台灣郵局等非日本資金不會自動算入日本資金池，也不會自動轉帳。若預算超過日本池資金，請先了解缺口並自行安排從哪個非日本資金來源支應；指定用途款項不要誤用。</div>
    <div id="sfHistory" class="sf-note"></div>
   `;
   const anchor=settings.querySelector('.assets-card')||settings.querySelector('.cc-card');
@@ -230,15 +236,21 @@
  }
  function applyProposal(){
   const plans=candidate(),p=evaluatePlan(plans);
-  if(p.safe+0.5<C.reserve){
-   alert('按目前勾選的日本資金與紀錄，這個方案仍會壓低你設定的安全緩衝。請先核對資產及卡費，或減少可支出金額後再套用。');
+  if(p.engine?.unfunded?.length){
+   alert('前面月份的超支仍有部分無法分攤。請先核對支出和月份，避免不小心套用錯誤預算。');
    return;
   }
-  if(!confirm('要把「目前月份及未來月份」改成安全版預算嗎？\\n\\n這不會刪除任何帳目、銀行餘額或信用卡資料。原先額外兩趟各 NT$30,000 大旅行將不再列入預算。'))return;
+  const gap=Math.max(0,C.reserve-p.safe);
+  const suffix=gap>0
+   ? '\n\n⚠️ 注意：此方案超出目前日本資金池或你設定的緩衝，需要另外備妥約 '+fmt(gap)+'，不會自動從國泰、郵局或其他帳戶撥款。\n請確定你願意自行安排這個資金缺口。'
+   : '\n\n依目前輸入的資產與支出估算，尚未低於你設定的安全緩衝。';
+  const msg='確定要把未來月份套用新的旅行預算嗎？\n12月旅行合計 NT$15,000、1月 NT$15,000、2月 NT$20,000。\n\n既有記帳與資產不會刪除；本動作只改預算，不會移動真實銀行存款。'+suffix;
+  if(!confirm(msg))return;
   Object.keys(RECOMMEND).forEach(m=>{
    if(m>=currentYM()){C.plans[m]={...RECOMMEND[m]};PLANS[m]={...RECOMMEND[m]}}
   });
-  persist();render();update();alert('安全版每月預算已套用。既有記帳與資產都保留。');
+  persist();render();update();
+  alert('旅行版月預算已套用。'+(gap>0?'請留意你自行承擔的資金缺口約 '+fmt(gap)+'。':'仍請持續觀察實際支出。'));
  }
  function updatePlan(){
   const rows=document.getElementById('sfPlanRows'),foot=document.getElementById('sfPlanFoot'),btn=document.getElementById('sfPlanApply');
@@ -248,13 +260,16 @@
   Object.keys(RECOMMEND).filter(m=>m>=now).forEach(m=>{
    const row=document.createElement('div');row.className='sf-planline';
    const amount=total(plans[m]);
-   row.innerHTML='<span>'+m+'　'+(monthLabels[m]||'')+'</span><b>'+fmt(amount)+'</b>';
+   const extra=['2026-12','2027-01','2027-02'].includes(m)?('｜旅行 '+fmt((plans[m].kansai||0)+(plans[m].bigTrip||0))):'';
+   row.innerHTML='<span>'+m+'　'+(monthLabels[m]||'')+extra+'</span><b>'+fmt(amount)+'</b>';
    rows.appendChild(row);
   });
-  foot.className='sf-result '+(p.safe>=C.reserve?'ok':'danger');
-  foot.textContent='目前勾選資金淨額 '+fmt(p.pool)+'；按新方案扣除已記支出後，預計尚需 '+fmt(p.remaining)+'；可保留 '+(p.safe<0?'−':'')+fmt(p.safe)+'。設定的安全緩衝 '+fmt(C.reserve)+'。'+(p.safe<C.reserve?' ⚠️ 目前不足安全底線，不可直接套用。':' ✅ 達安全底線，但仍要持續控制支出。');
-  if(p.engine?.unfunded?.length)foot.textContent+=' ⚠️ 舊月份有超支無法分攤到剩餘彈性預算。';
-  btn.disabled=p.safe<C.reserve||!!p.engine?.unfunded?.length;
+  const gap=Math.max(0,C.reserve-p.safe);
+  foot.className='sf-result '+(gap>0?'danger':'ok');
+  foot.textContent='目前勾選的日本資金淨額 '+fmt(p.pool)+'；套用旅行版預算後，預估未來尚需 '+fmt(p.remaining)+'；預計剩餘 '+(p.safe<0?'−':'')+fmt(p.safe)+'。額外安全緩衝設定 '+fmt(C.reserve)+'。';
+  foot.textContent+=gap>0?' ⚠️ 需要額外資金約 '+fmt(gap)+' 才能支應全部旅行與生活預算（包含所設緩衝）；不會自動動用非日本帳戶。':' ✅ 按目前資料可涵蓋支出，但仍應注意實際變動。';
+  if(p.engine?.unfunded?.length)foot.textContent+=' ⚠️ 過去超支尚有未分攤部分，先核對。';
+  btn.disabled=!!p.engine?.unfunded?.length;
   btn.style.opacity=btn.disabled?'.45':'1';
  }
  function history(){
