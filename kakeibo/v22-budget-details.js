@@ -123,7 +123,7 @@
 
   function markCathayInvestment(){
     document.querySelectorAll('.asset-name').forEach(el=>{
-      if(el.textContent.trim()==='國泰｜台幣') el.textContent='國泰｜台幣（投資）';
+      if(el.textContent.trim()==='國泰｜台幣') el.textContent='國泰｜台幣（現金，投資另計）';
     });
   }
 
