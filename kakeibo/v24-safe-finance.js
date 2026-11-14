@@ -169,7 +169,8 @@
    <div class="sf-risk">🔒 國泰緊急預備金與台灣郵局資金都不在這裡拿來提高消費上限。12月、2月原先另外編列的各 NT$30,000 大旅行暫不列入新方案；要出發需另外檢查資金或收入。</div>
    <div id="sfHistory" class="sf-note"></div>
   `;
-  settings.appendChild(card);
+  const anchor=settings.querySelector('.assets-card')||settings.querySelector('.cc-card');
+  if(anchor)settings.insertBefore(card,anchor);else settings.appendChild(card);
   const home=document.getElementById('page-home');
   if(home&&!document.getElementById('safeHomeStatus')){
    (home.querySelector('.flow-strip')||home.querySelector('.fxbar'))?.insertAdjacentHTML('afterend','<div id="safeHomeStatus">日本資金對帳：尚未建立新的追蹤起點。</div>');
